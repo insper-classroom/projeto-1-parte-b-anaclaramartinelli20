@@ -227,6 +227,31 @@ body{
   text-decoration: none;   /* remove sublinhado dos links */
 }
 
+/* --- Chip de tag --- */
+.tag-chip {
+  display: inline-block;
+  padding: .35rem .7rem;
+  border-radius: 999px;
+  background: #FFD233;          /* amarelinho do mock */
+  color: #111;
+  font-weight: 700;
+  font-size: .9rem;
+  line-height: 1;
+  text-decoration: none;         /* tira o sublinhado roxo */
+  box-shadow: 0 2px 0 rgba(0,0,0,.12);
+}
+
+.card .tag-chip {               /* espaço do conteúdo pra tag */
+  margin-top: .75rem;
+}
+
+.tag-chip:hover {
+  filter: brightness(0.98);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(0,0,0,.15);
+}
+
+
 
 /* posicionamento vertical em relação à lixeira */
 .icon-delete { top: 8px; }

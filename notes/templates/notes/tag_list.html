@@ -1,0 +1,14 @@
+{% extends "notes/base.html" %}
+{% block content %}
+<main class="container">
+  <h2>Tags</h2>
+  <ul>
+    {% for tag in tags %}
+      <li><a href="{% url 'tag_detail' tag.id %}">#{{ tag.name }}</a></li>
+    {% empty %}
+      <li>Nenhuma tag criada ainda.</li>
+    {% endfor %}
+  </ul>
+  <p><a class="btn" href="{% url 'index' %}">← Voltar</a></p>
+</main>
+{% endblock %}

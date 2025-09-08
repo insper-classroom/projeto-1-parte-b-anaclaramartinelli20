@@ -23,6 +23,7 @@
       name="detalhes"
       placeholder="Digite o conteúdo..."
     ></textarea>
+    <input class="form-card-title" type="text" name="tag" placeholder="Tag (opcional)" />
     <button class="btn" type="submit">Criar</button>
 
   </form>
@@ -31,20 +32,22 @@
   {% for note in notes %}
 
     <div class="card">
-      <a class="icon-delete" type="button" title="Excluir" aria-label="Excluir" href="/delete/{id}">
+      <a class="icon-delete" title="Excluir" aria-label="Excluir"
+        href="{% url 'delete' note.id %}">
         <img src="{% static 'img/lixeira.png' %}" alt="Excluir" />
       </a>
 
-      <a class="icon-edit" type="button" title="Editar" aria-label="Editar" href="templates\edit.html">
-        <img src="{% static 'img/edit.png'%}" alt="Editar" />
+      <a class="icon-edit" title="Editar" aria-label="Editar"
+        href="{% url 'edit' note.id %}">
+        <img src="{% static 'img/edit.png' %}" alt="Editar" />
       </a>
+      
+      <h3 class="card-title">{{note.title}}</h3>
+      <div class="card-content"><p>{{note.content}}</p></div>
 
-      <a class="icon-favorite" type="button" title="Favoritar" aria-label="Favoritar" href="templates/favorite.html">
-        <img src="{% static 'img/favorite.png' %}" alt="Favoritar" />
-      </a>
-
-      <h3 class="card-title">{{ note.title }}</h3>
-      <div class="card-content"><p>{{ note.content }}</p></div>
+      {% if note.tag %}
+        <a class="tag-chip" href="{% url 'tag_detail' note.tag.id %}">#{{ note.tag.name }}</a>
+      {% endif %}
 
     </div>  
 

@@ -1,0 +1,22 @@
+{% extends "notes/base.html" %}
+{% block content %}
+<main class="container">
+  <h2>Notas com a tag #{{ tag.name }}</h2>
+
+  <div class="card-container">
+    {% for note in notes %}
+      <div class="card">
+        <h3 class="card-title">{{ note.title }}</h3>
+        <div class="card-content"><p>{{ note.content }}</p></div>
+        {% if note.tag %}
+          <a class="tag-chip" href="{% url 'tag_detail' note.tag.id %}">#{{ note.tag.name }}</a>
+        {% endif %}
+      </div>
+    {% empty %}
+      <p>Nenhuma nota com esta tag.</p>
+    {% endfor %}
+  </div>
+
+  <p><a class="btn" href="{% url 'tag_list' %}">← Todas as tags</a></p>
+</main>
+{% endblock %}
