@@ -9,6 +9,8 @@
 
 <main class="container">
 
+  <p><a class="btn" href="{% url 'tag_list' %}">Todas as tags</a></p>
+
   <form class="form-card" method="post" action="/">
     {% csrf_token %}
 
