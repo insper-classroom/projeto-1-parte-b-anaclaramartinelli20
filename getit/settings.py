@@ -76,7 +76,7 @@ WSGI_APPLICATION = 'getit.wsgi.application'
 
 DATABASES = {
     'default': dj_database_url.config(
-        default='projeto-1-parte-b-anaclaramartinelli20.onrender.com/',
+        default='projeto-1-parte-b-anaclaramartinelli20.onrender.com',
         conn_max_age=600,
         ssl_require=not DEBUG
     )
