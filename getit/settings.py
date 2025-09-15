@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-(_g1p=3&3)uvqeky-0$-d18!@h%g6d00m$jujf@2_s4u&ck8g0'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['projeto-1-parte-b-anaclaramartinelli20.onrender.com', 'localhost', '127.0.0.1', '0.0.0.0']
 
@@ -75,13 +75,15 @@ WSGI_APPLICATION = 'getit.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    'default': dj_database_url.config(
-        default='postgresql://exemplo_prj1b_user:vCvVTXQPY8MSTCTUjkBxXQcKsdfAsqIJ@dpg-d31fjfqdbo4c73a7p4eg-a.oregon-postgres.render.com/exemplo_prj1b',
-        conn_max_age=600,
-        ssl_require=not DEBUG
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'getit',
+        'USER': 'getituser',
+        'PASSWORD': 'getitsenha',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators

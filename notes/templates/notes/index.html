@@ -1,63 +1,71 @@
 {% extends "notes/base.html" %}
 {% load static %}
-
 {% block content %}
 <div class="appbar">
-  <img src="{% static 'img/logo-getit.png' %}" class="logo" />
-  <span class="subtitle">Como o Post-it, mas com outro verbo</span>
-</div>
-
+    <img src="{% static 'img/logo-getit.png' %}" class="logo" />
+    <span class="subtitle">Como o Post-it, mas com outro verbo</span>
+  </div>
 <main class="container">
-
-  <p><a class="btn" href="{% url 'tag_list' %}">Todas as tags</a></p>
-
-  <form class="form-card" method="post" action="/">
+  <form class="form-card" method="post" action="{% url 'index' %}">
     {% csrf_token %}
-
     <input
-    class="form-card-title"
-    type="text"
-    name="titulo"
-    placeholder="Título"
+      class="form-card-title"
+      type="text"
+      name="titulo"
+      placeholder="Título"
+      required
     />
+
     <textarea
       class="autoresize"
       name="detalhes"
       placeholder="Digite o conteúdo..."
+      rows="5"
+      required
     ></textarea>
-    <input class="form-card-title" type="text" name="tag" placeholder="Tag (opcional)" />
-    <button class="btn" type="submit">Criar</button>
 
+    <input
+      class="form-card-title"
+      type="text"
+      name="tag"
+      placeholder="Tag (opcional, separe por vírgulas: ex. comida, receitas)"
+    />
+
+    <button class="btn" type="submit">Criar</button>
   </form>
 
   <div class="card-container">
-  {% for note in notes %}
+    {% for note in notes %}
+      <div class="card">
 
-    <div class="card">
-      <a class="icon-delete" title="Excluir" aria-label="Excluir"
-        href="{% url 'delete' note.id %}">
-        <img src="{% static 'img/lixeira.png' %}" alt="Excluir" />
-      </a>
+        <a class="icon-delete" title="Excluir" aria-label="Excluir"
+           href="{% url 'delete' note.id %}">
+          <img src="{% static 'img/lixeira.png' %}" alt="Excluir" />
+        </a>
 
-      <a class="icon-edit" title="Editar" aria-label="Editar"
-        href="{% url 'edit' note.id %}">
-        <img src="{% static 'img/edit.png' %}" alt="Editar" />
-      </a>
-      
-      <h3 class="card-title">{{note.title}}</h3>
-      <div class="card-content"><p>{{note.content}}</p></div>
+        <a class="icon-edit" title="Editar" aria-label="Editar"
+           href="{% url 'edit' note.id %}">
+          <img src="{% static 'img/edit.png' %}" alt="Editar" />
+        </a>
 
-      {% if note.tag %}
-        <a class="tag-chip" href="{% url 'tag_detail' note.tag.id %}">#{{ note.tag.name }}</a>
-      {% endif %}
+        {% if note.title %}
+          <h3 class="card-title">{{ note.title }}</h3>
+        {% endif %}
 
-    </div>  
+        <p class="card-content">{{ note.content }}</p>
 
-  {% endfor %}
+        <div class="tags">
+          {% for tag in note.tags.all %}
+            <a class="tag-badge" href="{% url 'tag_detail' tag.name %}">
+              #{{ tag.name }}
+            </a>
+          {% empty %}
+          {% endfor %}
+        </div>
+
+      </div>
+    {% endfor %}
   </div>
 
 </main>
 {% endblock %}
-
-
-

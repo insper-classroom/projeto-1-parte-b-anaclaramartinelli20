@@ -1,65 +1,94 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.db import transaction
 from .models import Note, Tag
 
+
+def _split_to_tags(raw: str):
+    """
+    Recebe a string digitada no input (ex.: "oi, teste ,  escola")
+    e retorna uma lista de instâncias Tag (criando quando necessário).
+    """
+    if not raw:
+        return []
+
+    names = [
+        # remove espaços extras, ignora vazios
+        part.strip()
+        for part in raw.split(",")
+    ]
+    names = [n for n in names if n]
+
+    tags = []
+    for name in names:
+        tag, _created = Tag.objects.get_or_create(name=name)
+        tags.append(tag)
+    return tags
+
+def _tags_as_csv(note: Note) -> str:
+    """
+    Converte as tags da nota para uma string separada por vírgulas,
+    usada para pré-popular o campo no edit.
+    """
+    return ", ".join(note.tags.values_list("name", flat=True))
+
+
 def index(request):
-    if request.method == 'POST':
-        title = request.POST.get('titulo')
-        content = request.POST.get('detalhes')
+    if request.method == "POST":
+        title = request.POST.get("titulo", "").strip()
+        content = request.POST.get("detalhes", "").strip()
+        tag_input = request.POST.get("tag", "")
 
-        # cria a nova nota no banco
-        Note.objects.create(title=title, content=content)
+        with transaction.atomic():
+            note = Note.objects.create(title=title, content=content)
+            # ManyToMany: set após criar a Note
+            note.tags.set(_split_to_tags(tag_input))
 
-        return redirect('index')  # redireciona para a lista
+        return redirect("index")
 
-    else:
-        all_notes = Note.objects.all()
-        return render(request, 'notes/index.html', {'notes': all_notes})
+    # lista com prefetch das tags para evitar N+1
+    notes = Note.objects.all().prefetch_related("tags")
+    return render(request, "notes/index.html", {"notes": notes})
+
 
 def delete(request, note_id):
-    note = get_object_or_404(Note, pk=note_id)
+    note = get_object_or_404(Note, id=note_id)
     note.delete()
-    return redirect('index')
+    return redirect("index")
 
-def _get_or_create_tag(tag_raw: str):
-    if not tag_raw:
-        return None
-    name = tag_raw.strip()
-    if not name:
-        return None
-    from .models import Tag
-    tag = Tag.objects.filter(name__iexact=name).first()
-    return tag or Tag.objects.create(name=name)
 
 def edit(request, note_id):
-    note = get_object_or_404(Note, pk=note_id)
-    if request.method == 'POST':
-        note.title = request.POST.get('titulo', note.title).strip()
-        note.content = request.POST.get('detalhes', note.content)
-        tag_input = request.POST.get('tag', '')
+    note = get_object_or_404(Note, id=note_id)
 
-        note.tag = _get_or_create_tag(tag_input)  # vazio → None; texto → Tag
+    if request.method == "POST":
+        note.title = request.POST.get("titulo", "").strip()
+        note.content = request.POST.get("detalhes", "").strip()
         note.save()
-        return redirect('index')
-    return render(request, 'notes/edit.html', {'note': note})
 
-def index(request):
-    if request.method == 'POST':
-        title = request.POST.get('titulo', '').strip()
-        content = request.POST.get('detalhes', '')
-        tag_input = request.POST.get('tag', '')
+        tag_input = request.POST.get("tag", "")
+        note.tags.set(_split_to_tags(tag_input))
 
-        tag = _get_or_create_tag(tag_input)
-        Note.objects.create(title=title, content=content, tag=tag)
-        return redirect('index')
+        return redirect("index")
 
-    all_notes = Note.objects.all().order_by('-id')
-    return render(request, 'notes/index.html', {'notes': all_notes})
+    # GET: renderiza formulário pré-preenchido
+    context = {
+        "note": note,
+        "tags_csv": _tags_as_csv(note),  
+    }
+    return render(request, "notes/edit.html", context)
+
+
+def tag_detail(request, name: str):
+    """
+    Página de uma tag específica mostrando suas notas.
+    """
+    tag = get_object_or_404(Tag, name=name)
+    notes = tag.notes.all().prefetch_related("tags")
+    return render(request, "notes/tag_detail.html", {"tag": tag, "notes": notes})
+
 
 def tag_list(request):
-    tags = Tag.objects.order_by('name')
-    return render(request, 'notes/tag_list.html', {'tags': tags})
-
-def tag_detail(request, tag_id):
-    tag = get_object_or_404(Tag, pk=tag_id)
-    notes = Note.objects.filter(tag=tag).order_by('-id')
-    return render(request, 'notes/tag_detail.html', {'tag': tag, 'notes': notes})
+    """
+    Lista de todas as tags (opcional, caso você tenha a rota/template).
+    """
+    tags = Tag.objects.all().order_by("name")
+    return render(request, "notes/tag_list.html", {"tags": tags})
