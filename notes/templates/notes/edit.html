@@ -30,7 +30,7 @@
 
     <input class="form-card-title" type="text" name="tag"
        placeholder="Tag (opcional)"
-       value="{% if note.tag %}{{ note.tag.name }}{% endif %}">
+        value="{{ tags_csv }}">
 
     <div style="display:flex; gap:12px">
       <button class="btn" type="submit">Salvar</button>

@@ -269,6 +269,8 @@ body{
   color: inherit;
 }
 .tags-table a:hover{ filter: brightness(0.95); }
+.appbar .spacer { flex: 1; }
+
 
 /* cores dos cards */
 .card-color-1{ background:#ead3a7; }

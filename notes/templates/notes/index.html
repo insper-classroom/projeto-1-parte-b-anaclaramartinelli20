@@ -4,7 +4,9 @@
 <div class="appbar">
     <img src="{% static 'img/logo-getit.png' %}" class="logo" />
     <span class="subtitle">Como o Post-it, mas com outro verbo</span>
-  </div>
+    <span class="spacer"></span>  {# empurra o botão p/ direita #}
+    <a class="btn" href="{% url 'tag_list' %}">Todas as tags</a>
+</div>
 <main class="container">
   <form class="form-card" method="post" action="{% url 'index' %}">
     {% csrf_token %}
@@ -56,13 +58,9 @@
 
         <div class="tags">
           {% for tag in note.tags.all %}
-            <a class="tag-badge" href="{% url 'tag_detail' tag.name %}">
-              #{{ tag.name }}
-            </a>
-          {% empty %}
-          {% endfor %}
+            <a class="tag-chip" href="{% url 'tag_detail' tag.name %}">#{{ tag.name }}</a>
+          {% empty %}{% endfor %}
         </div>
-
       </div>
     {% endfor %}
   </div>
