@@ -1,0 +1,41 @@
+{% extends "notes/base.html" %}
+{% load static %}
+
+<a class="btn" href="{% url 'tag_list' %}">Todas as tags</a>
+
+{% block content %}
+<div class="appbar">
+  <img src="{% static 'img/logo-getit.png' %}" class="logo" />
+  <span class="subtitle">Editar nota</span>
+</div>
+
+<main class="container">
+  <form class="form-card" method="post" action="{% url 'edit' note.id %}">
+    {% csrf_token %}
+    <input
+      class="form-card-title"
+      type="text"
+      name="titulo"
+      placeholder="Título"
+      value="{{ note.title }}"
+      required
+    />
+    <textarea
+      class="autoresize"
+      name="detalhes"
+      placeholder="Digite o conteúdo..."
+      rows="6"
+      required
+    >{{ note.content }}</textarea>
+
+    <input class="form-card-title" type="text" name="tag"
+       placeholder="Tag (opcional)"
+        value="{{ tags_csv }}">
+
+    <div style="display:flex; gap:12px">
+      <button class="btn" type="submit">Salvar</button>
+      <a class="btn" href="{% url 'index' %}" style="text-align:center; text-decoration:none">Cancelar</a>
+    </div>
+  </form>
+</main>
+{% endblock %}
